@@ -5,6 +5,7 @@ module.exports = class Canvas {
 		this.ctx.textAlign = 'center'
 		this.canvas.width = width
 		this.canvas.height = height
+		this.state = 'game'
 		this.scale = this.resize()
 		document.body.appendChild(this.canvas)
 	}

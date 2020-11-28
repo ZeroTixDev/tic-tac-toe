@@ -50,6 +50,8 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 	}
 	canvas.ctx.fillStyle = 'black'
 	canvas.ctx.font = '30px sans-serif'
-	canvas.ctx.fillText(`It's ${turn}'s Turn!`, GAME_HEIGHT - PADDING, CENTER_X)
+	let text = `It's ${turn}'s Turn!`
+	if(canvas.state === 'tie') text = 'The board is full!'
+	canvas.ctx.fillText(text, GAME_HEIGHT - PADDING, CENTER_X)
 	return clicked ? true : false
 }
