@@ -10,15 +10,21 @@ const canvas = new Canvas(GAME_WIDTH, GAME_HEIGHT)
 const grid = new Grid()
 const mouse = new Mouse()
 const time = new Time()
+let turn = 'X'
+
 window.addEventListener('resize', ()=>{
 	canvas.resize()
 })
 canvas.listen('mousemove', (event) => mouse.update({event, canvas}))
-console.log('running...')
-console.log(canvas, grid)
-;(function run(now) {
+canvas.listen('mousedown', () => mouse.down())
+canvas.listen('mouseup', () => mouse.up())
+function nextTurn(turn) {
+	return turn === 'X'? 'O': 'X'
+}
+(function run(now) {
 	time.update(now)
 	update({mouse, grid, delta:time.delta})
-	render({canvas, grid})
+	const next = render({canvas, grid, mouse, turn})
+	if(next) turn = nextTurn(turn)
 	requestAnimationFrame(run)
 })()

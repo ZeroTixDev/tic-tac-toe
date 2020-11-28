@@ -9,4 +9,5 @@ body {
 canvas {
 	position:absolute;
 	background:black;
+	cursor:crosshair;
 }

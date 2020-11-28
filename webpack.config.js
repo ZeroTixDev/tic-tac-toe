@@ -1,6 +1,6 @@
-const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
 	entry: './src/index.js',
 	mode: 'development',
@@ -23,7 +23,6 @@ module.exports = {
 		new HtmlWebpackPlugin()
 		/*new BundleAnalyzerPlugin(),*/
 	],
-	devtool: 'source-map',
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 	},

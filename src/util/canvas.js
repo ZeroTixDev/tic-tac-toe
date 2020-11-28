@@ -2,6 +2,7 @@ module.exports = class Canvas {
 	constructor(width, height) {
 		this.canvas = document.createElement('canvas')
 		this.ctx = this.canvas.getContext('2d')
+		this.ctx.textAlign = 'center'
 		this.canvas.width = width
 		this.canvas.height = height
 		this.scale = this.resize()
