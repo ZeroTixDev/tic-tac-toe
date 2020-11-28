@@ -10,6 +10,6 @@ module.exports = class Cell {
 		this.type = type
 	}
 	update({mouse, delta}) {
-		//this.color -= delta * 255
+		//do something useful
 	}
 }
