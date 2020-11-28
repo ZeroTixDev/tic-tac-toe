@@ -6,7 +6,8 @@ module.exports = class Canvas {
 		this.canvas.width = width
 		this.canvas.height = height
 		this.state = 'game'
-		this.scale = this.resize()
+		this.scale = undefined
+		this.resize()
 		document.body.appendChild(this.canvas)
 	}
 	resize() {
@@ -16,7 +17,7 @@ module.exports = class Canvas {
 		this.canvas.style.transform = 'scale(' + scale + ')'
 		this.canvas.style.left = ( winw - this.canvas.width ) / 2 + 'px'
 		this.canvas.style.top = ( winh - this.canvas.height ) / 2 + 'px'
-		return scale
+		this.scale = scale
 	}
 	listen(type, callback) {
 		this.canvas.addEventListener(type, callback)
