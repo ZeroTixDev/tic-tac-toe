@@ -32,12 +32,23 @@ function isFull(matrix) {
 function nextTurn(turn) {
 	return turn === 'X'? 'O': 'X'
 }
-
+function testWin(matrix) {
+	//horizontal
+	for(let row in matrix) {
+		if(matrix[row][0] === matrix[row][1] && matrix[row][1] === matrix[row][2]) {
+			// matched horizontal check
+			return true
+		}
+	}
+	//vertical
+	return false
+}
 (function run(now) {
 	time.update(now)
-	update({mouse, grid, delta:time.delta})
+	//update({mouse, grid, delta:time.delta})
 	const next = render({canvas, grid, mouse, turn})
 	if(next) turn = nextTurn(turn)
+	if(testWin(grid.matrix)) canvas.state = 'win'
 	if(isFull(grid.matrix)) canvas.state = 'tie'
 	requestAnimationFrame(run)
 })()

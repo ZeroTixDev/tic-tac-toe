@@ -17,7 +17,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 			const cellY = y + col * CELL_HEIGHT - 1
 			const width = CELL_WIDTH + 1
 			const height = CELL_HEIGHT + 1
-			if(mouse.x > cellX && mouse.x < cellX + width && mouse.y > cellY && mouse.y < cellY + height && cell.type === 'none') {
+			if(mouse.x > cellX && mouse.x < cellX + width && mouse.y > cellY && mouse.y < cellY + height && cell.type === 'none' && canvas.state !== 'win') {
 				//sorry i know this shouldn't be in render, ill probably find an alternative solution later
 				canvas.ctx.lineWidth = 9
 				if(!clicked && mouse.on) {
@@ -52,6 +52,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 	canvas.ctx.font = '30px sans-serif'
 	let text = `It's ${turn}'s Turn!`
 	if(canvas.state === 'tie') text = 'The board is full!'
+	if(canvas.state === 'win') text = `Player ${turn} has won!`
 	canvas.ctx.fillText(text, GAME_HEIGHT - PADDING, CENTER_X)
 	return clicked ? true : false
 }
