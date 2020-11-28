@@ -3,7 +3,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
 	entry: './src/index.js',
-	mode: 'development',
+	mode: 'production',
 	output: {
 		filename: '[name].[contenthash].js',
 		path: path.resolve(__dirname, 'dist'),
