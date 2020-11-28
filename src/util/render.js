@@ -7,7 +7,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 	const x = CENTER_X - (CELL_WIDTH * (SIZE / 2))
 	const y = CENTER_Y - (CELL_HEIGHT * (SIZE / 2)) //assuming every index has the same length
 	canvas.ctx.strokeStyle = 'black'
-	canvas.ctx.lineWidth = 7
+	canvas.ctx.lineWidth = 5
 	canvas.ctx.strokeRect(x, y,CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE )
 	let clicked = false
 	for (let row in grid.matrix) {
@@ -19,7 +19,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 			const height = CELL_HEIGHT + 1
 			if(mouse.x > cellX && mouse.x < cellX + width && mouse.y > cellY && mouse.y < cellY + height && cell.type === 'none') {
 				//sorry i know this shouldn't be in render, ill probably find an alternative solution later
-				canvas.ctx.lineWidth = 10
+				canvas.ctx.lineWidth = 9
 				if(!clicked && mouse.on) {
 					cell.type = turn
 					clicked = true
@@ -28,13 +28,13 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 			canvas.ctx.strokeStyle = `rgb(${cell.color},${cell.color},${cell.color})`
 			canvas.ctx.strokeRect( cellX, cellY, width, height)
 			if(cell.type === 'O') {
-				canvas.ctx.lineWidth = 10
+				canvas.ctx.lineWidth = 9
 				canvas.ctx.beginPath()
 				canvas.ctx.arc(cellX + width / 2, cellY + height / 2, 45, 0, Math.PI * 2)
 				canvas.ctx.stroke()
 			}
 			if(cell.type === 'X') {
-				canvas.ctx.lineWidth = 10
+				canvas.ctx.lineWidth = 9
 				const padding = 20 //this is for the x type
 				canvas.ctx.beginPath()
 				canvas.ctx.lineTo(cellX + padding, cellY + padding)
@@ -45,7 +45,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 				canvas.ctx.lineTo(cellX + padding, cellY + height - padding)
 				canvas.ctx.stroke()
 			}
-			canvas.ctx.lineWidth = 6
+			canvas.ctx.lineWidth = 5
 		}
 	}
 	canvas.ctx.fillStyle = 'black'
