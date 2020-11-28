@@ -5,16 +5,14 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --watch",
-    "start": "webpack serve",
-    "deploy": "gh-pages -d dist"
+    "start": "webpack serve"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "gh-pages": "^3.1.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "clean-webpack-plugin": "^0.1.18",
     "css-loader": "^5.0.1",
     "eslint": "^7.14.0",
     "html-webpack-plugin": "^4.5.0",

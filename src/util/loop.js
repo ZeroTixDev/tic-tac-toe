@@ -1,6 +1,8 @@
+'use strict'
+
 const { CELL_WIDTH, CELL_HEIGHT, BACKGROUND_COLOR, CENTER_X, CENTER_Y, SIZE, GAME_WIDTH, GAME_HEIGHT, PADDING } = require('./constants')
-module.exports = function render({canvas, grid, mouse, turn}) {
-	if(!grid || !canvas) throw new Error('called from render... canvas || grid is not defined')
+module.exports = function loop({ canvas, grid, mouse, turn }) {
+	if (!grid || !canvas) throw new Error('called from render... canvas || grid is not defined')
 	canvas.ctx.fillStyle = BACKGROUND_COLOR
 	canvas.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
 	//drawing the box
@@ -8,7 +10,7 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 	const y = CENTER_Y - (CELL_HEIGHT * (SIZE / 2)) //assuming every index has the same length
 	canvas.ctx.strokeStyle = 'black'
 	canvas.ctx.lineWidth = 5
-	canvas.ctx.strokeRect(x, y,CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE )
+	canvas.ctx.strokeRect(x, y, CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE)
 	let clicked = false
 	for (let row in grid.matrix) {
 		for (let col in grid.matrix[row]) {
@@ -17,23 +19,29 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 			const cellY = y + col * CELL_HEIGHT - 1
 			const width = CELL_WIDTH + 1
 			const height = CELL_HEIGHT + 1
-			if(mouse.x > cellX && mouse.x < cellX + width && mouse.y > cellY && mouse.y < cellY + height && cell.type === 'none' && canvas.state !== 'win') {
+			if (mouse.x > cellX &&
+                mouse.x < cellX + width &&
+                mouse.y > cellY &&
+                mouse.y < cellY + height &&
+                cell.type === 'none' &&
+                canvas.state !== 'win' &&
+                !clicked) {
 				//sorry i know this shouldn't be in render, ill probably find an alternative solution later
 				canvas.ctx.lineWidth = 9
-				if(!clicked && mouse.on) {
+				if (!clicked && mouse.on) {
 					cell.type = turn
 					clicked = true
 				}
 			}
 			canvas.ctx.strokeStyle = `rgb(${cell.color},${cell.color},${cell.color})`
-			canvas.ctx.strokeRect( cellX, cellY, width, height)
-			if(cell.type === 'O') {
+			canvas.ctx.strokeRect(cellX, cellY, width, height)
+			if (cell.type === 'O') {
 				canvas.ctx.lineWidth = 9
 				canvas.ctx.beginPath()
 				canvas.ctx.arc(cellX + width / 2, cellY + height / 2, 45, 0, Math.PI * 2)
 				canvas.ctx.stroke()
 			}
-			if(cell.type === 'X') {
+			if (cell.type === 'X') {
 				canvas.ctx.lineWidth = 9
 				const padding = 20 //this is for the x type
 				canvas.ctx.beginPath()
@@ -50,9 +58,9 @@ module.exports = function render({canvas, grid, mouse, turn}) {
 	}
 	canvas.ctx.fillStyle = 'black'
 	canvas.ctx.font = '30px sans-serif'
-	let text = `It's ${turn}'s Turn!`
-	if(canvas.state === 'tie') text = 'The board is full!'
-	if(canvas.state === 'win') text = `Player ${turn} has won!`
+	let text = `It's ${turn}'s Turn`
+	if (canvas.state === 'tie') text = 'The board is full'
+	if (canvas.state === 'win') text = `Player ${turn} has won`
 	canvas.ctx.fillText(text, GAME_HEIGHT - PADDING, CENTER_X)
-	return clicked ? true : false
+	return clicked
 }

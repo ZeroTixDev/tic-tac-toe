@@ -1,3 +1,5 @@
+'use strict'
+
 const GAME_WIDTH = 1600
 const GAME_HEIGHT = 900
 const CENTER_X = GAME_WIDTH / 2

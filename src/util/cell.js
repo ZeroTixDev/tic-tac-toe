@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = class Cell {
 	constructor(type = 'none') {
 		this.type = type === 'none' ? 'none' : type
@@ -8,8 +10,5 @@ module.exports = class Cell {
 	}
 	occupy(type) {
 		this.type = type
-	}
-	update({mouse, delta}) {
-		//do something useful
 	}
 }

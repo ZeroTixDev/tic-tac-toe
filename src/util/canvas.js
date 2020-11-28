@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = class Canvas {
 	constructor(width, height) {
 		this.canvas = document.createElement('canvas')

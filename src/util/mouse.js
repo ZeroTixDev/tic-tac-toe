@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = class Mouse {
 	constructor() {
 		this.x = -1

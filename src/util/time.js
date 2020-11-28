@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = class Time {
 	constructor() {
 		this.lastTime = 0

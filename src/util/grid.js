@@ -1,3 +1,5 @@
+'use strict'
+
 const Cell = require('./cell')
 module.exports = class Grid {
 	constructor(size = 3, matrix = [[new Cell(), new Cell(), new Cell()],[new Cell(), new Cell(), new Cell()],[new Cell(), new Cell(), new Cell()]]) {
