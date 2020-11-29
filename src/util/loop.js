@@ -58,7 +58,7 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
 					canvas.ctx.stroke()
 				} else if(theme === 'colors') {
 					canvas.ctx.fillStyle = 'red'
-					canvas.ctx.fillRect(cellX,cellY,width,height)
+					canvas.ctx.fillRect(cellX+5,cellY+5,width-10,height-10)
 				}
 			}
 			if (cell.type === 'X') {
@@ -75,7 +75,7 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
 					canvas.ctx.stroke()
 				} else if(theme === 'colors') {
 					canvas.ctx.fillStyle = 'blue'
-					canvas.ctx.fillRect(cellX,cellY,width,height)
+					canvas.ctx.fillRect(cellX+5,cellY+5,width-10,height-10)
 				}
 			}
 			canvas.ctx.lineWidth = 5
@@ -86,8 +86,18 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
 	if(theme === 'colors') canvas.ctx.fillStyle = 'white'
 	canvas.ctx.font = '30px sans-serif'
 	let text = `It's ${turn}'s Turn`
+	if(theme === 'colors') {
+		if(turn === 'X') text = 'It\'s Blue\'s turn'
+		else if(turn === 'O') text = 'It\'s Red\'s turn'
+	}
 	if (canvas.state === 'tie') text = 'The board is full'
-	if (canvas.state === 'win') text = `Player ${turn} has won`
+	if (canvas.state === 'win') {
+		text = `Player ${turn} has won`
+		if(theme === 'colors') {
+			if(turn === 'X') text = 'Blue has won'
+			else if(turn === 'O') text = 'Red has won'
+		}
+	}
 	const textX = CENTER_X
 	const textY = GAME_HEIGHT - PADDING
 	canvas.ctx.fillText(text, textX , textY)
