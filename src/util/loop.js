@@ -92,8 +92,13 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
 	canvas.ctx.fillText(text, textX , textY)
 	canvas.ctx.fillText('Space to change the game theme', CENTER_X, PADDING)
 	canvas.ctx.font = '60px sans-serif'
-	canvas.ctx.fillText(`X ${scores[0]}`, PADDING * 2,CENTER_Y)
-	canvas.ctx.fillText(`O ${scores[1]}`, GAME_WIDTH - PADDING * 2,CENTER_Y)
+	if(theme === 'letters') {
+		canvas.ctx.fillText(`X ${scores[0]}`, PADDING * 2,CENTER_Y)
+		canvas.ctx.fillText(`O ${scores[1]}`, GAME_WIDTH - PADDING * 2,CENTER_Y)
+	}else if(theme === 'colors') {
+		canvas.ctx.fillText(`Blue ${scores[0]}`, PADDING * 2,CENTER_Y)
+		canvas.ctx.fillText(`Red ${scores[1]}`, GAME_WIDTH - PADDING * 2,CENTER_Y)
+	}
 	canvas.ctx.font = '30px sans-serif'
 	canvas.ctx.fillStyle = `rgba(0,0,0,${canvas.restartTimer.current / canvas.restartTimer.max}`
 	if(theme === 'colors') canvas.ctx.fillStyle = `rgba(255,255,255,${canvas.restartTimer.current / canvas.restartTimer.max}`
