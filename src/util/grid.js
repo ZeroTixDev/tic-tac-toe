@@ -6,15 +6,19 @@ module.exports = class Grid {
 		this.size = size
 		this.matrix = matrix
 	}
-	updateCells({mouse}) {
+	full() {
 		for(let row in this.matrix) {
 			for(let col in this.matrix[row]) {
-				const cell = this.matrix[row][col]
-				cell.update({mouse})
+				if(this.matrix[row][col].avail()) return false
 			}
 		}
+		return true
 	}
-	copy() {
-		return new Grid(this.size,this.matrix)
+	clear() {
+		for(let row in this.matrix) {
+			for(let col in this.matrix[row]) {
+				this.matrix[row][col] = new Cell()
+			}
+		}
 	}
 }

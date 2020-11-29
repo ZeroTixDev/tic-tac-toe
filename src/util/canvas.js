@@ -1,5 +1,5 @@
 'use strict'
-
+const {Timer} = require('./time')
 module.exports = class Canvas {
 	constructor(width, height) {
 		this.canvas = document.createElement('canvas')
@@ -8,6 +8,7 @@ module.exports = class Canvas {
 		this.canvas.width = width
 		this.canvas.height = height
 		this.state = 'game'
+		this.restartTimer = new Timer({start:0, max: 1})
 		this.scale = undefined
 		this.resize()
 		document.body.appendChild(this.canvas)

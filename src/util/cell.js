@@ -3,7 +3,6 @@
 module.exports = class Cell {
 	constructor(type = 'none') {
 		this.type = type === 'none' ? 'none' : type
-		this.color = 0
 	}
 	avail() {
 		return this.type === 'none'

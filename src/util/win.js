@@ -4,13 +4,13 @@ function equal(arr) {
 function arrayToType(array) {
 	return array.map((cell)=>cell.type)
 }
+function taken(array) {
+	return array.every((value)=> !value.avail())
+}
 module.exports = function win(matrix) {
 	//Vertical
 	for(let row in matrix) {
-		if(equal(arrayToType(matrix[row])) && matrix[row][0].type !== 'none') {
-			// 1 0 0
-			// 1 0 0  //matrix,  row 0 , look at the other types , 0 == 1 && 1 == 2 && type != none
-			// 1 0 0
+		if(equal(arrayToType(matrix[row])) && taken(matrix[row])) {
 			return true
 		}
 	}
@@ -20,12 +20,8 @@ module.exports = function win(matrix) {
 		for(let j = 0; j < matrix[i].length; j++) {
 			array.push(matrix[j][i])
 		}
-		if(equal(arrayToType(array)) && matrix[0][i].type !== 'none') return true
+		if(equal(arrayToType(array)) && taken(array)) return true
 	}
-	//Diagonal
-	// 1 0 0
-	// 0 1 0
-	// 0 0 1
 	//top left to bottom right
 	const diag1 = (()=>{
 		const arr = []
@@ -34,10 +30,6 @@ module.exports = function win(matrix) {
 		}
 		return arr
 	})()
-	//Diagonal
-	// 0 0 1
-	// 0 1 0
-	// 1 0 0
 	//top right to bottom left
 	const diag2 = (()=>{
 		const arr = []
@@ -48,7 +40,7 @@ module.exports = function win(matrix) {
 		}
 		return arr
 	})()
-	if(equal(arrayToType(diag1)) && matrix[0][0].type !== 'none') return true
-	if(equal(arrayToType(diag2)) && matrix[matrix.length-1][matrix.length-1].type !== 'none') return true
+	if(equal(arrayToType(diag1)) && taken(diag1)) return true
+	if(equal(arrayToType(diag2)) && taken(diag2)) return true
 	return false
 }
