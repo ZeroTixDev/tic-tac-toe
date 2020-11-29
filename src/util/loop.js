@@ -16,7 +16,8 @@ const {
 	GRID_OUTLINE_COLOR,
 	X_COLOR,
 	O_COLOR,
-	TEXT_COLOR
+	TEXT_COLOR,
+	HIGHLIGHT_COLOR
 } = require('./constants')
 module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state }) {
 	if (!grid || !canvas) throw new Error('called from render... canvas || grid is not defined')
@@ -103,10 +104,6 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state
 	const textX = CENTER_X
 	const textY = CENTER_Y - PADDING - 10
 	canvas.ctx.fillText(text, textX, textY)
-	canvas.ctx.font = '60px sans-serif'
-	canvas.ctx.fillText(`X ${scores[0]}`, PADDING * 2, CENTER_Y)
-	canvas.ctx.fillText(`O ${scores[1]}`, GAME_WIDTH - PADDING * 2, CENTER_Y)
-	canvas.ctx.font = '30px sans-serif'
 	canvas.ctx.fillStyle = TEXT_COLOR
 	canvas.ctx.save()
 	canvas.ctx.globalAlpha = canvas.restartTimer.current / canvas.restartTimer.max
@@ -115,5 +112,25 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state
 	}
 	canvas.ctx.globalAlpha = 1
 	canvas.ctx.restore()
+	canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
+	canvas.ctx.font = '40px sans-serif'
+	if(turn === 'X') canvas.ctx.strokeStyle = HIGHLIGHT_COLOR
+	canvas.ctx.strokeRect(CENTER_X - 350, PADDING / 2, 300, 70)
+	canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
+	canvas.ctx.fillStyle = TEXT_COLOR
+	canvas.ctx.fillText('X', CENTER_X - 300, PADDING / 2 + 50)
+	let xText = String(scores[0])
+	if(scores[0] === 0) xText = '-'
+	canvas.ctx.font = '45px Arial'
+	canvas.ctx.fillText(xText, CENTER_X - 75, PADDING / 2 + 50)
+	if(turn === 'O') canvas.ctx.strokeStyle = HIGHLIGHT_COLOR
+	canvas.ctx.strokeRect(CENTER_X + 50, PADDING / 2, 300, 70)
+	canvas.ctx.font = '40px sans-serif'
+	canvas.ctx.fillText('O', CENTER_X + 100, PADDING / 2 + 50)
+	let oText = String(scores[1])
+	if(scores[1] === 0) oText = '-'
+	canvas.ctx.font = '45px Arial'
+	canvas.ctx.fillText(oText, CENTER_X + 275, PADDING / 2 + 50)
+	canvas.ctx.font = '30px sans-serif'
 	return clicked
 }
