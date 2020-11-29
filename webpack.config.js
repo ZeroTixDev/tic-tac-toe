@@ -17,7 +17,7 @@ const plugins = [
 ]
 module.exports = {
 	entry: './src/index.js',
-	mode: 'development',
+	mode: 'production',
 	output: {
 		filename: '[name].[contenthash].js',
 		// eslint-disable-next-line no-undef

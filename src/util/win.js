@@ -20,9 +20,35 @@ module.exports = function win(matrix) {
 		for(let j = 0; j < matrix[i].length; j++) {
 			array.push(matrix[j][i])
 		}
-		if(equal(arrayToType(array)) && matrix[0][i].type !== 'none') {
-			return true
-		}
+		if(equal(arrayToType(array)) && matrix[0][i].type !== 'none') return true
 	}
+	//Diagonal
+	// 1 0 0
+	// 0 1 0
+	// 0 0 1
+	//top left to bottom right
+	const diag1 = (()=>{
+		const arr = []
+		for(let i = 0; i < matrix.length; i++) {
+			arr.push(matrix[i][i])
+		}
+		return arr
+	})()
+	//Diagonal
+	// 0 0 1
+	// 0 1 0
+	// 1 0 0
+	//top right to bottom left
+	const diag2 = (()=>{
+		const arr = []
+		let j = 0
+		for(let i = matrix.length - 1; i >= 0; i--) {
+			arr.push(matrix[i][j])
+			j++
+		}
+		return arr
+	})()
+	if(equal(arrayToType(diag1)) && matrix[0][0].type !== 'none') return true
+	if(equal(arrayToType(diag2)) && matrix[matrix.length-1][matrix.length-1].type !== 'none') return true
 	return false
 }
