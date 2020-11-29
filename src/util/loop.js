@@ -24,6 +24,7 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
 	const x = CENTER_X - (CELL_WIDTH * (SIZE / 2))
 	const y = CENTER_Y - (CELL_HEIGHT * (SIZE / 2)) //assuming every index has the same length
 	canvas.ctx.strokeStyle = 'black'
+	if(theme === 'colors') canvas.ctx.strokeStyle = 'white'
 	canvas.ctx.lineWidth = 5
 	canvas.ctx.strokeRect(x, y, CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE)
 	let clicked = false
