@@ -7,7 +7,6 @@ module.exports = class Canvas {
 		this.ctx.textAlign = 'center'
 		this.canvas.width = width
 		this.canvas.height = height
-		this.state = 'game'
 		this.restartTimer = new Timer({start:0, max: 1})
 		this.scale = undefined
 		this.resize()

@@ -4,10 +4,8 @@
 	box-sizing:border-box;
 }
 body {
-	background: rgb(20,20,20);
+	background: #14bdac;
 }
 canvas {
 	position:absolute;
-	background:black;
-	cursor:crosshair;
 }

@@ -1,32 +1,40 @@
 'use strict'
 
-const { CELL_WIDTH, CELL_HEIGHT, BACKGROUND_COLOR, CENTER_X, CENTER_Y, SIZE, GAME_WIDTH, GAME_HEIGHT, PADDING } = require('./constants')
-module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme}) {
+function degToRad(deg) {
+	return deg * Math.PI / 180
+}
+const {
+	CELL_WIDTH,
+	CELL_HEIGHT,
+	BACKGROUND_COLOR,
+	CENTER_X,
+	CENTER_Y,
+	SIZE,
+	GAME_WIDTH,
+	GAME_HEIGHT,
+	PADDING,
+	GRID_OUTLINE_COLOR,
+	X_COLOR,
+	O_COLOR,
+	TEXT_COLOR
+} = require('./constants')
+module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state }) {
 	if (!grid || !canvas) throw new Error('called from render... canvas || grid is not defined')
 	//update
-	if(canvas.state === 'win' || canvas.state === 'tie') {
+	if (state.is('win') || state.is('tie')) {
 		canvas.restartTimer.update(delta)
-		if(canvas.restartTimer.current > canvas.restartTimer.max) {
+		if (canvas.restartTimer.current >= canvas.restartTimer.max) {
 			//cooldown is done
-			if(mouse.on) return true
+			if (mouse.on) return true
 		}
 	}
+	grid.cellUpdate(delta)
 	//rendering
 	canvas.ctx.fillStyle = BACKGROUND_COLOR
 	canvas.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
-	if(theme === 'colors') {
-		canvas.ctx.fillStyle = 'rgb(0,0,160)'
-		canvas.ctx.fillRect(0,0,CENTER_X, GAME_HEIGHT)
-		canvas.ctx.fillStyle = 'rgb(160,0,0)'
-		canvas.ctx.fillRect(CENTER_X, 0, GAME_WIDTH / 2, GAME_HEIGHT)
-	}
 	//drawing the box
 	const x = CENTER_X - (CELL_WIDTH * (SIZE / 2))
 	const y = CENTER_Y - (CELL_HEIGHT * (SIZE / 2)) //assuming every index has the same length
-	canvas.ctx.strokeStyle = 'black'
-	if(theme === 'colors') canvas.ctx.strokeStyle = 'white'
-	canvas.ctx.lineWidth = 5
-	canvas.ctx.strokeRect(x, y, CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE)
 	let clicked = false
 	for (let row in grid.matrix) {
 		for (let col in grid.matrix[row]) {
@@ -40,81 +48,72 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, theme
                 mouse.y > cellY &&
                 mouse.y < cellY + height &&
                 cell.avail() &&
-                canvas.state !== 'win') {
-				//sorry i know this shouldn't be in render, ill probably find an alternative solution later
-				canvas.ctx.lineWidth = 9
-				if (mouse.on) {
-					cell.occupy(turn)
+                state.not('win')) {
+				if (mouse.on && !clicked) {
+					grid.makeMove({ row, col, turn })
 					clicked = true
 				}
 			}
-			canvas.ctx.strokeStyle = `rgb(${cell.color},${cell.color},${cell.color})`
+			canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
 			canvas.ctx.strokeRect(cellX, cellY, width, height)
 			if (cell.type === 'O') {
-				if(theme === 'letters') {
-					canvas.ctx.lineWidth = 9
-					canvas.ctx.beginPath()
-					canvas.ctx.arc(cellX + width / 2, cellY + height / 2, 45, 0, Math.PI * 2)
-					canvas.ctx.stroke()
-				} else if(theme === 'colors') {
-					canvas.ctx.fillStyle = 'red'
-					canvas.ctx.fillRect(cellX+5,cellY+5,width-10,height-10)
+				canvas.ctx.lineWidth = 12
+				canvas.ctx.strokeStyle = O_COLOR
+				canvas.ctx.save()
+				canvas.ctx.translate(cellX + width / 2, cellY + height / 2)
+				canvas.ctx.scale(-1, 1)
+				canvas.ctx.rotate(degToRad(-90))
+				canvas.ctx.beginPath()
+				if (cell.circleTimer && cell.circleTimer.current > 0) {
+					canvas.ctx.arc(0,0, 40, 0, degToRad(cell.circleTimer.current))
 				}
+				canvas.ctx.stroke()
+				canvas.ctx.restore()
 			}
 			if (cell.type === 'X') {
-				if(theme === 'letters') {
-					canvas.ctx.lineWidth = 9
-					const padding = 20 //this is for the x type
-					canvas.ctx.beginPath()
-					canvas.ctx.lineTo(cellX + padding, cellY + padding)
-					canvas.ctx.lineTo(cellX + width - padding, cellY + height - padding)
-					canvas.ctx.stroke()
-					canvas.ctx.beginPath()
-					canvas.ctx.lineTo(cellX + width - padding, cellY + padding)
-					canvas.ctx.lineTo(cellX + padding, cellY + height - padding)
-					canvas.ctx.stroke()
-				} else if(theme === 'colors') {
-					canvas.ctx.fillStyle = 'blue'
-					canvas.ctx.fillRect(cellX+5,cellY+5,width-10,height-10)
+				canvas.ctx.lineWidth = 12
+				canvas.ctx.strokeStyle = X_COLOR
+				let padding = 50
+				if(cell.xTimer && cell.xTimer.current > 0) {
+					padding = cell.xTimer.current * -1 + 50
 				}
+				canvas.ctx.beginPath()
+				canvas.ctx.lineTo(cellX + padding, cellY + padding)
+				canvas.ctx.lineTo(cellX + width - padding, cellY + height - padding)
+				canvas.ctx.stroke()
+				canvas.ctx.beginPath()
+				canvas.ctx.lineTo(cellX + width - padding, cellY + padding)
+				canvas.ctx.lineTo(cellX + padding, cellY + height - padding)
+				canvas.ctx.stroke()
 			}
-			canvas.ctx.lineWidth = 5
+			canvas.ctx.lineWidth = 8
 		}
 	}
+	canvas.ctx.strokeStyle = BACKGROUND_COLOR
+	canvas.ctx.lineWidth = 15
+	canvas.ctx.lineWidth = grid.gridTimer.current * -1 + 290//15
+	canvas.ctx.strokeRect(x, y, CELL_WIDTH * SIZE, CELL_HEIGHT * SIZE)
+	canvas.ctx.lineWidth = 8
 	canvas.ctx.textAlign = 'center'
-	canvas.ctx.fillStyle = 'black'
-	if(theme === 'colors') canvas.ctx.fillStyle = 'white'
+	canvas.ctx.fillStyle = TEXT_COLOR
 	canvas.ctx.font = '30px sans-serif'
-	let text = `It's ${turn}'s Turn`
-	if(theme === 'colors') {
-		if(turn === 'X') text = 'It\'s Blue\'s turn'
-		else if(turn === 'O') text = 'It\'s Red\'s turn'
-	}
-	if (canvas.state === 'tie') text = 'The board is full'
-	if (canvas.state === 'win') {
-		text = `Player ${turn} has won`
-		if(theme === 'colors') {
-			if(turn === 'X') text = 'Blue has won'
-			else if(turn === 'O') text = 'Red has won'
-		}
-	}
+	let text = `${turn} Turn`
+	if (state.is('tie')) text = 'The board is full'
+	if (state.is('win')) text = `Player ${turn} has won`
 	const textX = CENTER_X
-	const textY = GAME_HEIGHT - PADDING
-	canvas.ctx.fillText(text, textX , textY)
-	canvas.ctx.fillText('Space to change the game theme', CENTER_X, PADDING)
+	const textY = CENTER_Y - PADDING - 10
+	canvas.ctx.fillText(text, textX, textY)
 	canvas.ctx.font = '60px sans-serif'
-	if(theme === 'letters') {
-		canvas.ctx.fillText(`X ${scores[0]}`, PADDING * 2,CENTER_Y)
-		canvas.ctx.fillText(`O ${scores[1]}`, GAME_WIDTH - PADDING * 2,CENTER_Y)
-	}else if(theme === 'colors') {
-		canvas.ctx.fillText(`Blue ${scores[0]}`, PADDING * 2,CENTER_Y)
-		canvas.ctx.fillText(`Red ${scores[1]}`, GAME_WIDTH - PADDING * 2,CENTER_Y)
-	}
+	canvas.ctx.fillText(`X ${scores[0]}`, PADDING * 2, CENTER_Y)
+	canvas.ctx.fillText(`O ${scores[1]}`, GAME_WIDTH - PADDING * 2, CENTER_Y)
 	canvas.ctx.font = '30px sans-serif'
-	canvas.ctx.fillStyle = `rgba(0,0,0,${canvas.restartTimer.current / canvas.restartTimer.max}`
-	if(theme === 'colors') canvas.ctx.fillStyle = `rgba(255,255,255,${canvas.restartTimer.current / canvas.restartTimer.max}`
-	if(canvas.state === 'win'|| canvas.state === 'tie') {
-		canvas.ctx.fillText('Click the screen to play again', textX , textY + (PADDING / 2))
+	canvas.ctx.fillStyle = TEXT_COLOR
+	canvas.ctx.save()
+	canvas.ctx.globalAlpha = canvas.restartTimer.current / canvas.restartTimer.max
+	if (state.is('win') || state.is('tie')) {
+		canvas.ctx.fillText('Click the screen to play again', textX, CENTER_Y + (PADDING * 1.5))
 	}
+	canvas.ctx.globalAlpha = 1
+	canvas.ctx.restore()
 	return clicked
 }

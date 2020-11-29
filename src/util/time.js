@@ -10,9 +10,10 @@ module.exports = {Time:class Time {
 		this.lastTime = now
 	}
 },Timer: class Timer {
-	constructor({start, max}) {
+	constructor({start, max, mult = 1}) {
 		this.start = start
 		this.max = max
+		this.mult = mult
 		this.current = this.max
 	}
 	begin() {
@@ -20,7 +21,9 @@ module.exports = {Time:class Time {
 	}
 	update(delta) {
 		if(this.current < this.max) {
-			this.current += delta
+			this.current += delta * this.mult
+			if(this.mult > 1) this.current += (this.current/this.max) * 5
 		}
+		if(this.current >= this.max) this.current = this.max
 	}
 }}
