@@ -19,7 +19,7 @@ const turn = new Turn()
 const playerScores = [0, 0]
 const human = 'O'
 const ai = 'X'
-const maxDepth = 1000
+const maxDepth = 4
 let choseDif = false
 let mode = null
 // Player vs Player |  Player vs Computer
@@ -83,14 +83,14 @@ function minimax(newGrid, depth, isMax) {
 		if(depth === 0) {
 			return max.cell
 		} else {
-			return max.cost
+			return max.cost + Math.random() * 10 - 5
 		}
 	} else {
 		const min = values.sort((a,b) => b.cost - a.cost)[0]
 		if(depth === 0) {
 			return min.cell
 		} else {
-			return min.cost
+			return min.cost + Math.random() * 10 - 5
 		}
 	}
 }
