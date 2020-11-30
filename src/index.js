@@ -39,13 +39,13 @@ const scores = {
 }
 
 function bestMove(spots) {
-	let bestScore = -Infinity
-	let move
+	let bestScore = Infinity
+	let move = null
 	for (let spot of spots) {
 		grid.makeMove({ row: spot.row, col: spot.col, turn: ai })
 		let score = minimax(grid.matrix, 0, false)
 		grid.makeMove({ row: spot.row, col: spot.col, turn: 'none' })
-		if (score > bestScore) {
+		if (score < bestScore) {
 			bestScore = score
 			move = { row: spot.row, col: spot.col }
 		}
@@ -59,10 +59,17 @@ function bestMove(spots) {
 		turn.next()
 	}
 }
-
+function full(matrix) {
+	for(let row in matrix) {
+		for(let col in matrix) {
+			if(matrix[row][col].avail()) return false
+		}
+	}
+	return true
+}
 function minimax(matrix, depth, isMax) {
-	if(win(matrix)) return isMax ? scores[ai] : scores[human]
-	if(grid.full()) return scores['tie']
+	if(win(matrix)) return isMax ? scores[ai] - depth: scores[human] - depth
+	if(full(matrix)) return scores['tie'] - depth
 	if(isMax) {
 		let bestScore = -Infinity
 		for(let row in matrix) {
@@ -70,7 +77,7 @@ function minimax(matrix, depth, isMax) {
 				const cell = matrix[row][col]
 				if(cell.avail()) {
 					grid.makeMove({row,col,turn:ai})
-					let score = minimax(matrix, depth + 1, false)
+					let score = minimax(grid.matrix, depth + 1, false)
 					grid.makeMove({row,col,turn:'none'})
 					bestScore = Math.max(score, bestScore)
 				}
