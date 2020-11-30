@@ -57,9 +57,9 @@ async function bestMove() {
 function minimax(newGrid, depth, isMax) {
 	if(win(newGrid.matrix)) {
 		if(isMax) {
-			return 10 - depth //computer
+			return 10 - depth + Math.random() * 10 - 5//computer
 		} else {
-			return depth - 10
+			return depth - 10 + Math.random() * 10 - 5
 		}
 	}
 	if(newGrid.full()) return 0
