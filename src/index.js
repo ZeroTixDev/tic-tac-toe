@@ -19,7 +19,7 @@ const turn = new Turn()
 const playerScores = [0, 0]
 const human = 'O'
 const ai = 'X'
-const maxDepth = 2
+const maxDepth = 1000
 let choseDif = false
 let mode = null
 // Player vs Player |  Player vs Computer
