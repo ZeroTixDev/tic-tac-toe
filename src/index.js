@@ -19,7 +19,7 @@ const turn = new Turn()
 const playerScores = [0, 0]
 const human = 'O'
 const ai = 'X'
-const maxDepth = 4
+const maxDepth = 5
 let choseDif = false
 let mode = null
 // Player vs Player |  Player vs Computer
@@ -66,9 +66,9 @@ async function bestMove() {
 function minimax(newGrid, depth, isMax) {
 	if(win(newGrid.matrix)) {
 		if(isMax) {
-			return 10 - depth + Math.random() * 5 - 2.5//computer
+			return 10 - depth + Math.random() //computer
 		} else {
-			return depth - 10 + Math.random() * 5 - 2.5
+			return depth - 10 + Math.random()
 		}
 	}
 	if(newGrid.full()) return 0
@@ -103,105 +103,21 @@ function minimax(newGrid, depth, isMax) {
 		}
 	}
 }
-/*const scores = {
-	'X':10,
-	'O':-10,
-	'tie':0,
-}
-
-function bestMove(spots) {
-	let bestScore = -Infinity
-	let move = null
-	for (let { row, col } of spots) {
-		grid.makeMove({ row, col, turn: ai })
-		let score = minimax(grid.matrix, 0, false)
-		grid.makeMove({ row, col, turn: 'none' })
-		if (score > bestScore) {
-			bestScore = score
-			move = { row, col}
-		}
-	}
-	grid.makeMove({ row: move.row, col: move.col, turn: ai })
-	if (win(grid.matrix) && state.not('win')) {
-		state.set('win')
-		playerScores[turn.index]++
-		canvas.restartTimer.begin()
-	} else {
-		turn.next()
-	}
-}
-function full(matrix) {
-	for(let row in matrix) {
-		for(let col in matrix) {
-			if(matrix[row][col].avail()) return false
-		}
-	}
-	return true
-}
-function minimax(matrix, depth, isMax) {
-	if(win(matrix)) {
-		if(isMax) return scores[ai]
-		else return scores[human]
-	}
-	if(full(matrix)) {
-		return scores['tie']
-	}
-	if(isMax) {
-		let bestScore = -Infinity
-		for(let row in grid.matrix) {
-			for(let col in grid.matrix[row]) {
-				const cell = grid.matrix[row][col]
-				if(cell.avail()) {
-					grid.makeMove({row,col,turn:ai})
-					let score = minimax(grid.matrix, depth + 1, false)
-					grid.makeMove({row,col,turn:'none'})
-					bestScore = Math.max(score,bestScore)
-				}
-			}
-		}
-		return bestScore
-	} else {
-		let bestScore = Infinity
-		for(let row in grid.matrix) {
-			for(let col in grid.matrix[row]) {
-				const cell = grid.matrix[row][col]
-				if(cell.avail()) {
-					grid.makeMove({row,col,turn:human})
-					let score = minimax(grid.matrix, depth + 1, true)
-					grid.makeMove({row,col,turn:'none'})
-					bestScore = Math.min(score,bestScore)
-				}
-			}
-		}
-		return bestScore
-	}
-}*/
-
 function moveAi() {
 	const spots = grid.availableSpots()
 	if (spots.length > 0) {
-		//setTimeout(() => {
 		bestMove()
-		/*const spot = spots[Math.floor(Math.random() * spots.length)]
-            grid.makeMove({row:spot.row,col:spot.col,turn:turn.turn})
-            if(win(grid.matrix) && state.not('win')) {
-            	state.set('win')
-            	playerScores[turn.index]++
-            	canvas.restartTimer.begin()
-            } else {
-            	turn.next()
-            }*/
-		//}, Math.random() * 500 + 200)
 	}
 }
 
-function restart() {
+async function restart() {
 	turn.randomize()
 	grid.clear()
 	state.set('game')
 	mouse.up()
 	grid.gridTimer.begin()
 	if (mode === 'pvc' && turn.turn === ai) {
+		await delay(500)
 		firstMove()
 	}
 }
