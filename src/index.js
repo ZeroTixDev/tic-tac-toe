@@ -33,6 +33,21 @@ canvas.listen('mousemove', (event) => mouse.update({ event, canvas }))
 canvas.listen('mousedown', () => mouse.down())
 canvas.listen('mouseup', () => mouse.up())
 
+function next() {
+	if (win(grid.matrix) && state.not('win')) {
+		state.set('win')
+		playerScores[turn.index]++
+		canvas.restartTimer.begin()
+	} else {
+		turn.next()
+	}
+}
+function firstMove() {
+	const array = [{row:0,col:0},{row:0,col:2},{row:2,col:0},{row:2,col:2},{row:1,col:1}]
+	const {row, col} = array[Math.floor(Math.random() * array.length)]
+	grid.makeMove({row, col, turn: ai})
+	next()
+}
 const delay =  (ms) => {
 	return new Promise((resolve)=>setTimeout(resolve, ms))
 }
@@ -46,20 +61,14 @@ async function bestMove() {
 	const {row, col} = await processAi()
 	if(Date.now() - before < 1500) await delay(Math.random() * 100 + 500)
 	grid.makeMove({row, col, turn:ai})
-	if (win(grid.matrix) && state.not('win')) {
-		state.set('win')
-		playerScores[turn.index]++
-		canvas.restartTimer.begin()
-	} else {
-		turn.next()
-	}
+	next()
 }
 function minimax(newGrid, depth, isMax) {
 	if(win(newGrid.matrix)) {
 		if(isMax) {
-			return 10 - depth + Math.random() * 10 - 5//computer
+			return 10 - depth + Math.random() * 5 - 2.5//computer
 		} else {
-			return depth - 10 + Math.random() * 10 - 5
+			return depth - 10 + Math.random() * 5 - 2.5
 		}
 	}
 	if(newGrid.full()) return 0
@@ -83,14 +92,14 @@ function minimax(newGrid, depth, isMax) {
 		if(depth === 0) {
 			return max.cell
 		} else {
-			return max.cost + Math.random() * 10 - 5
+			return max.cost + Math.random() * 5 - 2.5
 		}
 	} else {
 		const min = values.sort((a,b) => b.cost - a.cost)[0]
 		if(depth === 0) {
 			return min.cell
 		} else {
-			return min.cost + Math.random() * 10 - 5
+			return min.cost + Math.random() * 5 - 2.5
 		}
 	}
 }
@@ -193,7 +202,7 @@ function restart() {
 	mouse.up()
 	grid.gridTimer.begin()
 	if (mode === 'pvc' && turn.turn === ai) {
-		moveAi()
+		firstMove()
 	}
 }
 
