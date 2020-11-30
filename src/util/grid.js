@@ -6,7 +6,6 @@ module.exports = class Grid {
 		this.size = size
 		this.matrix = matrix
 		this.gridTimer = new Timer({start:0,max:260,mult:260/0.5})
-		this.gridTimer.begin()
 	}
 	full() {
 		for(let row in this.matrix) {
@@ -15,6 +14,9 @@ module.exports = class Grid {
 			}
 		}
 		return true
+	}
+	copy() {
+		return new Grid(this.size, this.matrix)
 	}
 	cellUpdate(delta) {
 		for(let row in this.matrix) {

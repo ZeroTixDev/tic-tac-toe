@@ -19,6 +19,7 @@ const turn = new Turn()
 const playerScores = [0, 0]
 const human = 'O'
 const ai = 'X'
+const maxDepth = 2
 let choseDif = false
 let mode = null
 // Player vs Player |  Player vs Computer
@@ -32,22 +33,83 @@ canvas.listen('mousemove', (event) => mouse.update({ event, canvas }))
 canvas.listen('mousedown', () => mouse.down())
 canvas.listen('mouseup', () => mouse.up())
 
-const scores = {
+const delay =  (ms) => {
+	return new Promise((resolve)=>setTimeout(resolve, ms))
+}
+const processAi = () => {
+	return new Promise(resolve => {
+		resolve(minimax(grid.copy(), 0, true))
+	})
+}
+async function bestMove() {
+	const before = Date.now()
+	const {row, col} = await processAi()
+	if(Date.now() - before < 1500) await delay(Math.random() * 100 + 500)
+	grid.makeMove({row, col, turn:ai})
+	if (win(grid.matrix) && state.not('win')) {
+		state.set('win')
+		playerScores[turn.index]++
+		canvas.restartTimer.begin()
+	} else {
+		turn.next()
+	}
+}
+function minimax(newGrid, depth, isMax) {
+	if(win(newGrid.matrix)) {
+		if(isMax) {
+			return 10 - depth //computer
+		} else {
+			return depth - 10
+		}
+	}
+	if(newGrid.full()) return 0
+	if(depth >= maxDepth) return 1
+	const values = []
+	for(let row in newGrid.matrix) {
+		for(let col in newGrid.matrix[row]) {
+			const gridCopy = newGrid.copy()
+			if(!gridCopy.matrix[row][col].avail()) continue
+			gridCopy.makeMove({row, col, turn: (isMax ? ai : human)})
+			const value = minimax(gridCopy.copy(), depth + 1, !isMax)
+			gridCopy.makeMove({row, col, turn: 'none'})
+			values.push({
+				cost:value,
+				cell: {row, col}
+			})
+		}
+	}
+	if(isMax) {
+		const max = values.sort((a,b)=> a.cost - b.cost)[0]
+		if(depth === 0) {
+			return max.cell
+		} else {
+			return max.cost
+		}
+	} else {
+		const min = values.sort((a,b) => b.cost - a.cost)[0]
+		if(depth === 0) {
+			return min.cell
+		} else {
+			return min.cost
+		}
+	}
+}
+/*const scores = {
 	'X':10,
 	'O':-10,
 	'tie':0,
 }
 
 function bestMove(spots) {
-	let bestScore = Infinity
+	let bestScore = -Infinity
 	let move = null
-	for (let spot of spots) {
-		grid.makeMove({ row: spot.row, col: spot.col, turn: ai })
+	for (let { row, col } of spots) {
+		grid.makeMove({ row, col, turn: ai })
 		let score = minimax(grid.matrix, 0, false)
-		grid.makeMove({ row: spot.row, col: spot.col, turn: 'none' })
-		if (score < bestScore) {
+		grid.makeMove({ row, col, turn: 'none' })
+		if (score > bestScore) {
 			bestScore = score
-			move = { row: spot.row, col: spot.col }
+			move = { row, col}
 		}
 	}
 	grid.makeMove({ row: move.row, col: move.col, turn: ai })
@@ -68,44 +130,49 @@ function full(matrix) {
 	return true
 }
 function minimax(matrix, depth, isMax) {
-	if(win(matrix)) return isMax ? scores[ai] - depth: scores[human] - depth
-	if(full(matrix)) return scores['tie'] - depth
+	if(win(matrix)) {
+		if(isMax) return scores[ai]
+		else return scores[human]
+	}
+	if(full(matrix)) {
+		return scores['tie']
+	}
 	if(isMax) {
 		let bestScore = -Infinity
-		for(let row in matrix) {
-			for(let col in matrix[row]) {
-				const cell = matrix[row][col]
+		for(let row in grid.matrix) {
+			for(let col in grid.matrix[row]) {
+				const cell = grid.matrix[row][col]
 				if(cell.avail()) {
 					grid.makeMove({row,col,turn:ai})
 					let score = minimax(grid.matrix, depth + 1, false)
 					grid.makeMove({row,col,turn:'none'})
-					bestScore = Math.max(score, bestScore)
+					bestScore = Math.max(score,bestScore)
 				}
 			}
 		}
 		return bestScore
 	} else {
 		let bestScore = Infinity
-		for(let row in matrix) {
-			for(let col in matrix[row]) {
-				const cell = matrix[row][col]
+		for(let row in grid.matrix) {
+			for(let col in grid.matrix[row]) {
+				const cell = grid.matrix[row][col]
 				if(cell.avail()) {
 					grid.makeMove({row,col,turn:human})
-					let score = minimax(matrix, depth + 1, true)
+					let score = minimax(grid.matrix, depth + 1, true)
 					grid.makeMove({row,col,turn:'none'})
-					bestScore = Math.min(score, bestScore)
+					bestScore = Math.min(score,bestScore)
 				}
 			}
 		}
 		return bestScore
 	}
-}
+}*/
 
 function moveAi() {
 	const spots = grid.availableSpots()
 	if (spots.length > 0) {
 		//setTimeout(() => {
-		bestMove(spots)
+		bestMove()
 		/*const spot = spots[Math.floor(Math.random() * spots.length)]
             grid.makeMove({row:spot.row,col:spot.col,turn:turn.turn})
             if(win(grid.matrix) && state.not('win')) {
@@ -148,7 +215,7 @@ function restart() {
 			}
 		}
 	}
-	if (typeof value === 'object' && value.type) {
+	if (typeof value === 'object' && value.type && !choseDif) {
 		choseDif = true
 		if (value.type === 'pvp') mode = 'pvp'
 		if (value.type === 'pvc') mode = 'pvc'
