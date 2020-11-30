@@ -19,8 +19,40 @@ const {
 	TEXT_COLOR,
 	HIGHLIGHT_COLOR
 } = require('./constants')
-module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state }) {
+module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state, choseDif, mode, human}) {
 	if (!grid || !canvas) throw new Error('called from render... canvas || grid is not defined')
+	if(!choseDif) {
+		canvas.ctx.fillStyle = BACKGROUND_COLOR
+		canvas.ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
+		canvas.ctx.font = '25px sans-serif'
+		canvas.ctx.textAlign = 'center'
+		canvas.ctx.fillStyle = TEXT_COLOR
+		canvas.ctx.textBaseline = 'middle'
+		canvas.ctx.fillText('Player vs Player', CENTER_X - 225, CENTER_Y)
+		canvas.ctx.fillText('Player vs Computer', CENTER_X + 275, CENTER_Y)
+		canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
+		canvas.ctx.lineWidth = 10
+		let x = CENTER_X - 350
+		let y = CENTER_Y - 50
+		let width = 250
+		let height = 100
+		if (mouse.touches({x,y,width,height})) {
+			if(mouse.on) return {type:'pvp'}
+			canvas.ctx.strokeStyle = HIGHLIGHT_COLOR
+		}
+		canvas.ctx.strokeRect(x, y, width, height)
+		canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
+		x = CENTER_X + 150
+		y = CENTER_Y - 50
+		width = 250
+		height = 100
+		if (mouse.touches({x,y,width,height})) {
+			if(mouse.on) return {type:'pvc'}
+			canvas.ctx.strokeStyle = HIGHLIGHT_COLOR
+		}
+		canvas.ctx.strokeRect(CENTER_X + 150, CENTER_Y - 50, 250, 100)
+		return
+	}
 	//update
 	if (state.is('win') || state.is('tie')) {
 		canvas.restartTimer.update(delta)
@@ -44,15 +76,12 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state
 			const cellY = y + col * CELL_HEIGHT - 1
 			const width = CELL_WIDTH + 1
 			const height = CELL_HEIGHT + 1
-			if (mouse.x > cellX &&
-                mouse.x < cellX + width &&
-                mouse.y > cellY &&
-                mouse.y < cellY + height &&
-                cell.avail() &&
-                state.not('win')) {
+			if (mouse.touches({x:cellX,y:cellY,width,height}) && cell.avail() && state.not('win')) {
 				if (mouse.on && !clicked) {
-					grid.makeMove({ row, col, turn })
-					clicked = true
+					if((mode === 'pvc' && turn === human) || (mode === 'pvp')) {
+   					grid.makeMove({ row, col, turn })
+   					clicked = true
+					}
 				}
 			}
 			canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
@@ -118,6 +147,7 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state
 	canvas.ctx.strokeRect(CENTER_X - 350, PADDING / 2, 300, 70)
 	canvas.ctx.strokeStyle = GRID_OUTLINE_COLOR
 	canvas.ctx.fillStyle = TEXT_COLOR
+	canvas.ctx.textBaseline = 'alphabetic'
 	canvas.ctx.fillText('X', CENTER_X - 300, PADDING / 2 + 50)
 	let xText = String(scores[0])
 	if(scores[0] === 0) xText = '-'
@@ -130,7 +160,7 @@ module.exports = function loop({ canvas, grid, mouse, turn, delta, scores, state
 	let oText = String(scores[1])
 	if(scores[1] === 0) oText = '-'
 	canvas.ctx.font = '45px Arial'
-	canvas.ctx.fillText(oText, CENTER_X + 275, PADDING / 2 + 50)
+	canvas.ctx.fillText(oText, CENTER_X + 325, PADDING / 2 + 50)
 	canvas.ctx.font = '30px sans-serif'
 	return clicked
 }

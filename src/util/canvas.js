@@ -5,6 +5,7 @@ module.exports = class Canvas {
 		this.canvas = document.createElement('canvas')
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.textAlign = 'center'
+		this.ctx.textBaseline = 'middle'
 		this.canvas.width = width
 		this.canvas.height = height
 		this.restartTimer = new Timer({start:0, max: 1})

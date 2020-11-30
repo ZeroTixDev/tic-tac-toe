@@ -1,7 +1,7 @@
 module.exports = class Turn {
 	constructor(types=['X','O']) {
 		this.types = types
-		this.index = Math.floor(Math.random()*this.types.length)
+		this.index = 0
 	}
 	get turn() {
 		return this.types[this.index]

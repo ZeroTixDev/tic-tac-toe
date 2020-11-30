@@ -1,7 +1,7 @@
 'use strict'
 const {Timer} = require('./time')
 module.exports = class Cell {
-	constructor(type = 'none', types=['X','O']) {
+	constructor(type = 'none', types=['X','O','none']) {
 		this.type = type === 'none' ? 'none' : type
 		this.types = types
 	}

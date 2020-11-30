@@ -26,6 +26,16 @@ module.exports = class Grid {
 			this.gridTimer.update(delta)
 		}
 	}
+	availableSpots() {
+		const spots = []
+		for(let row in this.matrix) {
+			for(let col in this.matrix[row]) {
+				const cell = this.matrix[row][col]
+				if(cell.avail()) spots.push({cell,row,col})
+			}
+		}
+		return spots
+ 	}
 	makeMove({row,col,turn}) {
 		this.matrix[row][col].occupy(turn)
 	}

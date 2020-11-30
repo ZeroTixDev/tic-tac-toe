@@ -17,4 +17,7 @@ module.exports = class Mouse {
 	up() {
 		this.on = false
 	}
+	touches({x, y, width, height}){
+		return this.x > x && this.x < x + width && this.y > y && this.y < y + height
+	}
 }
